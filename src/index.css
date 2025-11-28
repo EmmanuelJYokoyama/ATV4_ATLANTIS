@@ -1,0 +1,29 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;  
+}
+
+/* Espaço para a navbar sticky */
+body { padding-top: 64px; }
+
+/* Container de página padrão */
+.page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* Inputs em largura total dentro do container */
+.page-container .p-inputtext,
+.page-container .p-dropdown,
+.page-container .p-inputmask,
+.page-container .p-inputnumber input { width: 100%; box-sizing: border-box; }
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
