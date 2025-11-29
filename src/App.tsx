@@ -18,7 +18,6 @@ import TitularInfo from './components/titularInfo/titularInfo';
 import EditarTitular from './components/editarTitular/editarTitular';
 import EditarDependente from './components/editarDependente/editarDependente';
 
-// Função App() {
   type state = {
     tela: string
   }
@@ -33,7 +32,6 @@ import EditarDependente from './components/editarDependente/editarDependente';
     }
   
     selecionarTela(opcao: string, evento: { preventDefault: () => void; }) {
-      console.log('ta clicando....');
       evento.preventDefault()
       this.setState({
         tela: opcao

@@ -5,7 +5,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = (props) =>{
   const navigate = useNavigate();
-    // --- Botões Navbar ---
     const itemsNavbar = [
         {
           label: "Home",
@@ -36,10 +35,8 @@ const Navbar: React.FC = (props) =>{
     // --- Função Navegar ---
     const navegar = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {};
     return (
-      <div>
-        <div className="card">
-          <Menubar onClick={(e) => navegar(e)} model={itemsNavbar} />
-        </div>
+      <div className="navbar">
+        <Menubar onClick={(e) => navegar(e)} model={itemsNavbar} />
       </div>
     );
 };
