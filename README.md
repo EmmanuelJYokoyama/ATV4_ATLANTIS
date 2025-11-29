@@ -13,7 +13,7 @@ npm -v
 
 ## 2. Clonar o Projeto
 ```powershell
-git clone <URL_DO_REPOSITORIO>
+git clone https://github.com/EmmanuelJYokoyama/ATV4_ATLANTIS
 cd ATV4_ATLANTIS
 ```
 
