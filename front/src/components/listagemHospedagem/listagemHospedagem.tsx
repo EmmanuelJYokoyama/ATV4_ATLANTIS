@@ -4,46 +4,57 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
+import api, { Hospedagem, Titular, Acomodacao } from '../../services/api';
 
 
 const ListagemHospedagem: React.FC = () =>{
-    const [hospedes, setHospedes] = useState([])
+    const [rows, setRows] = useState<any[]>([])
     const navigate = useNavigate();
 
-    class ProductService {        
-    
-        getHospedesSmall() {
-            return fetch('data/listaHospedes.json').then(res => res.json()).then(d => d.data);
+    useEffect(() => {
+        (async () => {
+            try {
+                const [hs, tits, acoms] = await Promise.all([api.listHospedagens(), api.listTitulares(), api.listAcomodacoes()]);
+                const mapTit = new Map(tits.map(t => [t.id, t] as [string,Titular]));
+                const mapAcom = new Map(acoms.map(a => [a.id, a] as [string,Acomodacao]));
+                const composed = hs.map(h => ({
+                    ...h,
+                    nomeAcomodacao: mapAcom.get(h.acomodacaoId)?.nome || '',
+                    nomeTitular: mapTit.get(h.titularId)?.nome || '',
+                    documento: mapTit.get(h.titularId)?.documento?.numero || '',
+                    dataEntrada: h.checkin
+                }));
+                setRows(composed);
+            } catch(e) { console.error(e); }
+        })();
+    }, []);
+
+    const visualizarHospede = (row: any) =>{
+        if (row.titularId){
+            navigate(`/titular-info/${row.titularId}`)
         }
     }
-    const productService = new ProductService(); 
-
-    const visualizarHospede = () =>{
-        navigate('/titular-info')
-    }
     
-    const actionBodyTemplate = () => {
+    const actionBodyTemplate = (row: any) => {
         return (
             <React.Fragment>
                 <Button
                     icon="pi pi-user" 
                     className="p-button-rounded p-button-outlined p-button-info " 
-                    onClick={visualizarHospede}
+                    onClick={() => visualizarHospede(row)}
                     tooltip='Visualizar Hóspede' tooltipOptions={{position: 'top'}}/> 
             </React.Fragment>
         );
     }
 
-    useEffect(() => {
-        productService.getHospedesSmall().then(data => setHospedes(data));
-    }, []); 
+    
     
     return(
         <div className='menu-hospede'>
             <div className='card'>
                 <h1>Listagem de Hóspedes</h1>
-                <DataTable value={hospedes} responsiveLayout="scroll">
+                <DataTable value={rows} responsiveLayout="scroll">
                     <Column field="nomeAcomodacao" header="Acomodação" sortable></Column>
                     <Column field="nomeTitular" header="Hóspede (titular)" sortable></Column>
                     <Column field="documento" header="Documento" sortable></Column>

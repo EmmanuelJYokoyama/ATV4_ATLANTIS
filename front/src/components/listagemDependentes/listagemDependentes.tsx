@@ -2,32 +2,50 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import "./listagemDependentes.css"
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Button } from 'primereact/button';
+import api, { Dependente, Titular } from '../../services/api';
 
 const ListagemDependente: React.FC = ()=>{
-    const [dependentes, setDependentes] = useState([])
+    const [rows, setRows] = useState<any[]>([])
     const navigate = useNavigate();
 
-    class ProductService {          
-    
-        getDependentesSmall() {
-            return fetch('data/listaDependentes.json').then(res => res.json()).then(d => d.data);
-        }
-    }
-    const productService = new ProductService();
+    useEffect(() => {
+        (async () => {
+            try {
+                const [deps, tits] = await Promise.all([api.listDependentes(), api.listTitulares()]);
+                const mapTit = new Map(tits.map(t => [t.id, t.nome] as [string,string]));
+                const composed = deps.map(d => ({
+                    ...d,
+                    nomeTitular: mapTit.get(d.titularId) || '',
+                    documento: d.documento?.numero || ''
+                }));
+                setRows(composed);
+            } catch (e) { console.error(e); }
+        })();
+    }, []);
 
-    const editarDependente = () =>{
-        navigate('/editar-dependente')
+    const editarDependente = (row: Dependente) =>{
+        navigate(`/editar-dependente/${row.id}`)
     }
 
-    const actionBodyTemplate = () => {
+    const visualizarDependente = (row: Dependente) => {
+        navigate(`/dependente-info/${row.id}`)
+    }
+
+    const actionBodyTemplate = (row: Dependente) => {
         return (
             <React.Fragment>               
                 <Button
+                    icon="pi pi-user" 
+                    className="p-button-rounded p-button-outlined p-button-info" 
+                    onClick={() => visualizarDependente(row)}
+                    tooltip='Visualizar Dependente' tooltipOptions={{position: 'top'}}
+                />
+                <Button
                     icon="pi pi-pencil" 
                     className="p-button-rounded p-button-outlined p-button-info " 
-                    onClick={editarDependente}
+                    onClick={() => editarDependente(row)}
                     tooltip='Editar Dependente' tooltipOptions={{position: 'top'}}
                 />
                 <Button
@@ -39,15 +57,13 @@ const ListagemDependente: React.FC = ()=>{
         );
     }
 
-    useEffect(() => {
-        productService.getDependentesSmall().then(data => setDependentes(data));
-    }, []); 
+    
 
     return(
         <div className='menu-listagem-dependente'>
             <div className="card">
                 <h1>Dependentes</h1>
-                <DataTable value={dependentes} responsiveLayout="scroll">
+                <DataTable value={rows} responsiveLayout="scroll">
                     <Column field="nomeTitular" header="Titular" sortable></Column>
                     <Column field="nome" header="Nome" sortable></Column>
                     <Column field="documento" header="Documento" sortable></Column>

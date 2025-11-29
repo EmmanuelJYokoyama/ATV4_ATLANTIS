@@ -4,40 +4,37 @@ import { Column } from 'primereact/column';
 import "./listagemTitular.css"
 import { Navigate, useNavigate } from 'react-router';
 import { Button } from 'primereact/button';
+import api, { Titular } from '../../services/api';
 
 const ListagemTitular: React.FC = () =>{
-    const [titulares, setTitulares] = useState([]);
+    const [titulares, setTitulares] = useState<Titular[]>([]);
     const navigate = useNavigate();
 
-    class ProductService {          
+    useEffect(() => {
+        api.listTitulares().then(setTitulares).catch(console.error);
+    }, []);
     
-        getTitularesSmall() {
-            return fetch('data/listaTitulares.json').then(res => res.json()).then(d => d.data);
-        }
-    }
-    const productService = new ProductService();
-    
-    const visualizarHospede = () =>{
-        navigate('/titular-info')
+    const visualizarHospede = (row: Titular) =>{
+        navigate(`/titular-info/${row.id}`)
     }
 
-    const editarTitular = () =>{
-        navigate('/editar-titular')
+    const editarTitular = (row: Titular) =>{
+        navigate(`/editar-titular/${row.id}`)
     }
 
-    const actionBodyTemplate = () => {
+    const actionBodyTemplate = (row: Titular) => {
         return (
             <React.Fragment>
                 <Button
                     icon="pi pi-user" 
                     className="p-button-rounded p-button-outlined p-button-info" 
-                    onClick={visualizarHospede}
+                    onClick={() => visualizarHospede(row)}
                     tooltip='Visualizar Hóspede' tooltipOptions={{position: 'top'}}
                 /> 
                 <Button
                     icon="pi pi-pencil" 
                     className="p-button-rounded p-button-outlined p-button-info " 
-                    onClick={editarTitular}
+                    onClick={() => editarTitular(row)}
                     tooltip='Editar Titular' tooltipOptions={{position: 'top'}}
                 />
                 <Button
@@ -50,9 +47,7 @@ const ListagemTitular: React.FC = () =>{
         );
     }
 
-    useEffect(() => {
-        productService.getTitularesSmall().then(data => setTitulares(data));
-    }, []); 
+    
 
     return(
         <div className='menu-listagem'>
@@ -61,7 +56,7 @@ const ListagemTitular: React.FC = () =>{
                 <DataTable value={titulares} responsiveLayout="scroll">
                     <Column field="nome" header="Nome" sortable></Column>
                     <Column field="nomeSocial" header="Nome Social" sortable></Column>
-                    <Column field="documento" header="Documento" sortable></Column>
+                    <Column header="Documento" body={(row: Titular) => row.documento?.numero || ''} sortable></Column>
                     <Column field="dataNascimento" header="Data Nascimento" sortable></Column>
                     <Column body={actionBodyTemplate} header='Opções'exportable={false} style={{ minWidth: '8rem' }}></Column>
                 </DataTable>

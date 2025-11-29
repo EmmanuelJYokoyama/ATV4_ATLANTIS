@@ -1,0 +1,15 @@
+[
+  {
+    "id": "99ed4923-b309-4e76-89f8-9d67ccbf015b",
+    "createdAt": "2025-11-29T18:47:41.782Z",
+    "updatedAt": "2025-11-29T18:47:41.782Z",
+    "titularId": "9fb11746-4999-4adc-9425-3040874fff8c",
+    "nome": "filho lixo",
+    "nomeSocial": "lixo de merda",
+    "dataNascimento": "12/12/2222",
+    "documento": {
+      "tipo": "RG",
+      "numero": "11111111"
+    }
+  }
+]

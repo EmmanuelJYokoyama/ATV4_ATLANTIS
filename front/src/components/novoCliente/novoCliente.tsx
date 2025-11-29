@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import { Button } from 'primereact/button';
 import './novoCliente.css'
@@ -6,6 +6,7 @@ import { InputText } from 'primereact/inputtext';
 import { InputMask } from 'primereact/inputmask';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
+import api from '../../services/api';
 
 const NovoCliente: React.FC = () =>{
 
@@ -13,8 +14,9 @@ const NovoCliente: React.FC = () =>{
     const [nome, setNome] = useState('');
     const [nomeSocial, setNomeSocial] = useState('')
     const [dataNascimento, setdataNascimento] = useState<string|undefined>()
-    const [dataCadastro, setdataCadastro] = useState<string|undefined>()
-    const [telefones, setTelefones] = useState<string|undefined>()
+    const [dataCadastro, setdataCadastro] = useState<string|undefined>('')
+    const [telefoneCelular, setTelefoneCelular] = useState<string|undefined>('')
+    const [telefoneResidencial, setTelefoneResidencial] = useState<string|undefined>('')
 
     // --- Endereço ---
     const [pais, setPais] = useState('')
@@ -25,7 +27,7 @@ const NovoCliente: React.FC = () =>{
     const [cep,setCep] = useState<string|undefined>()
 
     // --- Documentos ---
-    const [documento,setDocumento] = useState(null)
+    const [documentoNumero,setDocumentoNumero] = useState<number | null | undefined>(undefined);
     const [docSelecionado, setDocSelecionado] = useState<any>(null);
     const docs = [
         { tipo: 'RG' },
@@ -34,6 +36,30 @@ const NovoCliente: React.FC = () =>{
     ]
     const tipoDoc= (e: { value: any}) => {
         setDocSelecionado(e.value);
+    }
+
+    useEffect(() => {
+        // definir sempre data de hoje ao montar
+        setdataCadastro(new Date().toLocaleDateString());
+    }, []);
+
+    async function salvarCliente(){
+        const payload = {
+            nome,
+            nomeSocial,
+            dataNascimento,
+            documento: { tipo: docSelecionado?.tipo, numero: String(documentoNumero ?? '') },
+            endereco: { pais, estado, cidade, bairro, rua, cep },
+            telefoneCelular,
+            telefoneResidencial
+        } as any;
+        try {
+            await api.createTitular(payload);
+            alert('Cliente cadastrado com sucesso');
+            // reset simples
+        } catch (e) {
+            console.error(e); alert('Falha ao cadastrar cliente');
+        }
     }
 
     return(
@@ -52,13 +78,13 @@ const NovoCliente: React.FC = () =>{
                             <InputMask className='dados-pessoais' mask="99/99/9999" value={dataNascimento} placeholder="Data Nascimento" onChange={(e) => setdataNascimento(e.value)}></InputMask>                           
                         </span>
                         <span className="dados-pessoais">
-                            <InputMask className='dados-pessoais' mask="99/99/9999" value={dataCadastro} placeholder="Data Cadastro"  onChange={(e) => setdataCadastro(e.value)}></InputMask>                           
+                            <InputMask className='dados-pessoais' mask="(99) 99999-9999" value={telefoneCelular} placeholder="Telefone Celular" onChange={(e)=> setTelefoneCelular(e.value)}></InputMask>                           
                         </span>
                         <span className="dados-pessoais">
-                            <InputMask className='dados-pessoais' mask="(99) 99999-9999" value={telefones} placeholder="Telefone Celular"></InputMask>                           
+                            <InputMask className='dados-pessoais' mask="(99) 99999-9999" value={telefoneResidencial} placeholder="Telefone Residencial" onChange={(e)=> setTelefoneResidencial(e.value)}></InputMask>                           
                         </span>
                         <span className="dados-pessoais">
-                            <InputMask className='dados-pessoais' mask="(99) 99999-9999" value={telefones} placeholder="Telefone Residencial"></InputMask>                           
+                            <InputText className='dados-pessoais' value={dataCadastro} placeholder='Data Cadastro' disabled />
                         </span>
                     </AccordionTab>
                 </Accordion>
@@ -90,7 +116,7 @@ const NovoCliente: React.FC = () =>{
                     <AccordionTab header={<React.Fragment><i className="pi pi-copy"></i><span>Documentos</span></React.Fragment>}>
                         <Dropdown className='dropdown-demo dados-pessoais' value={docSelecionado} options={docs} onChange={tipoDoc} optionLabel="tipo" placeholder="Tipo de Documento" />
                         <span className="dados-pessoais">                            
-                            <InputNumber className='dados-pessoais numero' placeholder='Número do Documento' value={documento}  />                        
+                            <InputNumber className='dados-pessoais numero' placeholder='Número do Documento' value={documentoNumero} onValueChange={(e) => setDocumentoNumero(e.value)} />                        
                         </span>
                     </AccordionTab>
                 </Accordion>            
@@ -98,7 +124,7 @@ const NovoCliente: React.FC = () =>{
             </div>
 
                 <div className="button-demo btn-cadastro">
-                    <Button label="Cadastrar Cliente" icon="pi pi-check" />              
+                    <Button label="Cadastrar Cliente" icon="pi pi-check" onClick={salvarCliente} />              
                 </div>
         </div>                
     )

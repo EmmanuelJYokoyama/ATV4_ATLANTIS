@@ -1,0 +1,14 @@
+[
+  {
+    "id": "9fb11746-4999-4adc-9425-3040874fff8c",
+    "createdAt": "2025-11-29T17:09:27.631Z",
+    "updatedAt": "2025-11-29T18:15:46.765Z",
+    "nome": "Cleber",
+    "nomeSocial": "333",
+    "dataNascimento": "33/33/3333",
+    "documento": {
+      "tipo": "CPF",
+      "numero": "333333333"
+    }
+  }
+]

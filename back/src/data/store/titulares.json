@@ -1,0 +1,35 @@
+[
+  {
+    "id": "9fb11746-4999-4adc-9425-3040874fff8c",
+    "createdAt": "2025-11-29T17:09:27.631Z",
+    "updatedAt": "2025-11-29T18:15:46.765Z",
+    "nome": "Cleber",
+    "nomeSocial": "333",
+    "dataNascimento": "33/33/3333",
+    "documento": {
+      "tipo": "CPF",
+      "numero": "333333333"
+    }
+  },
+  {
+    "id": "16bfe698-60c9-4096-a15a-9abcf42f15db",
+    "createdAt": "2025-11-29T18:37:42.486Z",
+    "updatedAt": "2025-11-29T18:37:42.486Z",
+    "nome": "JOSUE",
+    "nomeSocial": "EEEEEEE",
+    "dataNascimento": "12/33/3333",
+    "telefoneCelular": "(12) 22222-2222",
+    "telefoneResidencial": "(12) 21212-1111",
+    "endereco": {
+      "pais": "erwewerewrewr",
+      "estado": "werwerwer",
+      "cidade": "werewrewrwer",
+      "bairro": "werwerwer",
+      "rua": "ewrwerwer"
+    },
+    "documento": {
+      "tipo": "CPF",
+      "numero": "555555666"
+    }
+  }
+]

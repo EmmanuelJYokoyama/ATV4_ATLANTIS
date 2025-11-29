@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import { Button } from 'primereact/button';
 import './editarTitular.css'
@@ -6,15 +6,21 @@ import { InputText } from 'primereact/inputtext';
 import { InputMask } from 'primereact/inputmask';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
+import { useParams, useNavigate } from 'react-router-dom';
+import api, { Titular } from '../../services/api';
 
 const EditarTitular: React.FC = () =>{
+
+    const { id } = useParams();
+    const navigate = useNavigate();
 
     // --- Dados Pessoais ---
     const [nome, setNome] = useState('');
     const [nomeSocial, setNomeSocial] = useState('')
     const [dataNascimento, setdataNascimento] = useState<string|undefined>()
     const [dataCadastro, setdataCadastro] = useState<string|undefined>()
-    const [telefones, setTelefones] = useState<string|undefined>()
+    const [telefoneCelular, setTelefoneCelular] = useState<string|undefined>()
+    const [telefoneResidencial, setTelefoneResidencial] = useState<string|undefined>()
 
     // --- Endereço ---
     const [pais, setPais] = useState('')
@@ -25,15 +31,56 @@ const EditarTitular: React.FC = () =>{
     const [cep,setCep] = useState<string|undefined>()
 
     // --- Documentos ---
-    const [documento,setDocumento] = useState(null)
+    const [documentoNumero,setDocumentoNumero] = useState<number | null | undefined>(undefined)
     const [docSelecionado, setDocSelecionado] = useState<any>(null);
     const docs = [
         { tipo: 'RG' },
         { tipo: 'CPF' },
         { tipo: 'PASSAPORTE' }
     ]
-    const tipoDoc= (e: { value: any}) => {
-        setDocSelecionado(e.value);
+    const tipoDoc= (e: { value: any}) => { setDocSelecionado(e.value); }
+
+    useEffect(() => {
+        if (!id) return;
+        api.getTitular(id)
+            .then(t => {
+                setNome(t.nome);
+                setNomeSocial(t.nomeSocial || '');
+                setdataNascimento(t.dataNascimento);
+                setDocSelecionado(t.documento?.tipo ? { tipo: t.documento.tipo } : null);
+                if (t.documento?.numero) setDocumentoNumero(Number(t.documento.numero));
+                // Telefones
+                setTelefoneCelular(t.telefoneCelular || '');
+                setTelefoneResidencial(t.telefoneResidencial || '');
+                // Endereço
+                setPais(t.endereco?.pais || '');
+                setEstado(t.endereco?.estado || '');
+                setCidade(t.endereco?.cidade || '');
+                setBairro(t.endereco?.bairro || '');
+                setRua(t.endereco?.rua || '');
+                setCep(t.endereco?.cep || '');
+                // Datas
+                setdataCadastro(t.createdAt ? new Date(t.createdAt).toLocaleDateString() : '');
+            })
+            .catch(() => { /* ignore not found */ });
+    }, [id]);
+
+    async function salvarAlteracoes(){
+        if (!id){ alert('ID não encontrado na rota'); return; }
+        try {
+            const payload: Partial<Titular> = {
+                nome,
+                nomeSocial: nomeSocial || undefined,
+                dataNascimento,
+                documento: { tipo: docSelecionado?.tipo, numero: String(documentoNumero ?? '') },
+                telefoneCelular: telefoneCelular || undefined,
+                telefoneResidencial: telefoneResidencial || undefined,
+                endereco: { pais, estado, cidade, bairro, rua, cep }
+            };
+            const atualizado = await api.updateTitular(id, payload);
+            alert('Titular atualizado');
+            navigate('/listagem-titular');
+        } catch(e){ console.error(e); alert('Falha ao atualizar titular'); }
     }
 
     return(
@@ -52,13 +99,13 @@ const EditarTitular: React.FC = () =>{
                             <InputMask className='dados-pessoais' mask="99/99/9999" value={dataNascimento} placeholder="Data Nascimento" onChange={(e) => setdataNascimento(e.value)}></InputMask>                           
                         </span>
                         <span className="dados-pessoais">
-                            <InputMask className='dados-pessoais' mask="99/99/9999" value={dataCadastro} placeholder="Data Cadastro"  onChange={(e) => setdataCadastro(e.value)}></InputMask>                           
+                            <InputMask className='dados-pessoais' mask="99/99/9999" value={dataCadastro} placeholder="Data Cadastro" disabled></InputMask>                           
                         </span>
                         <span className="dados-pessoais">
-                            <InputMask className='dados-pessoais' mask="(99) 99999-9999" value={telefones} placeholder="Telefone Celular"></InputMask>                           
+                            <InputMask className='dados-pessoais' mask="(99) 99999-9999" value={telefoneCelular} placeholder="Telefone Celular" onChange={(e) => setTelefoneCelular(e.value)}></InputMask>                           
                         </span>
                         <span className="dados-pessoais">
-                            <InputMask className='dados-pessoais' mask="(99) 99999-9999" value={telefones} placeholder="Telefone Residencial"></InputMask>                           
+                            <InputMask className='dados-pessoais' mask="(99) 99999-9999" value={telefoneResidencial} placeholder="Telefone Residencial" onChange={(e) => setTelefoneResidencial(e.value)}></InputMask>                           
                         </span>
                     </AccordionTab>
                 </Accordion>
@@ -81,7 +128,7 @@ const EditarTitular: React.FC = () =>{
                                 <InputText className='dados-pessoais'placeholder='Rua' value={rua} onChange={(e) => setRua(e.target.value)} />                           
                         </span>
                         <span className="dados-pessoais">
-                            <InputMask className='dados-pessoais' mask="99.999-999" value={cep} placeholder="Código Postal"></InputMask>                      
+                            <InputMask className='dados-pessoais' mask="99.999-999" value={cep} placeholder="Código Postal" onChange={(e) => setCep(e.value)}></InputMask>                      
                         </span>
                     </AccordionTab>
                 </Accordion>
@@ -90,7 +137,7 @@ const EditarTitular: React.FC = () =>{
                     <AccordionTab header={<React.Fragment><i className="pi pi-copy"></i><span>Documentos</span></React.Fragment>}>
                         <Dropdown className='dropdown-demo dados-pessoais' value={docSelecionado} options={docs} onChange={tipoDoc} optionLabel="tipo" placeholder="Tipo de Documento" />
                         <span className="dados-pessoais">                            
-                            <InputNumber className='dados-pessoais numero' placeholder='Número do Documento' value={documento}  />                        
+                            <InputNumber className='dados-pessoais numero' placeholder='Número do Documento' value={documentoNumero} onValueChange={(e) => setDocumentoNumero(e.value)} />                        
                         </span>
                     </AccordionTab>
                 </Accordion>            
@@ -98,7 +145,7 @@ const EditarTitular: React.FC = () =>{
             </div>
 
                 <div className="button-demo btn-cadastro">
-                    <Button label="Salvar Alterações" icon="pi pi-check" />              
+                    <Button label="Salvar Alterações" icon="pi pi-check" onClick={salvarAlteracoes} />              
                 </div>
         </div>                
     )

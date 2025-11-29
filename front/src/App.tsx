@@ -17,6 +17,7 @@ import ListagemHospedagem from './components/listagemHospedagem/listagemHospedag
 import TitularInfo from './components/titularInfo/titularInfo';
 import EditarTitular from './components/editarTitular/editarTitular';
 import EditarDependente from './components/editarDependente/editarDependente';
+import DependenteInfo from './components/dependenteInfo/dependenteInfo';
 
   type state = {
     tela: string
@@ -55,8 +56,12 @@ import EditarDependente from './components/editarDependente/editarDependente';
               <Route path='novo-cliente' element={<NovoCliente/>}/>
               <Route path='novo-dependente' element={<NovoDependente/>}/>
               <Route path='titular-info' element={<TitularInfo/>}/>
+              <Route path='titular-info/:id' element={<TitularInfo/>}/>
               <Route path='editar-titular' element={<EditarTitular/>}/>
+              <Route path='editar-titular/:id' element={<EditarTitular/>}/>
               <Route path='editar-dependente' element={<EditarDependente/>}/>
+              <Route path='editar-dependente/:id' element={<EditarDependente/>}/>
+              <Route path='dependente-info/:id' element={<DependenteInfo/>}/>
             </Routes>
           </BrowserRouter>        
       </div>
