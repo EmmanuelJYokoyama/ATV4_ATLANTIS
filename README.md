@@ -1,7 +1,4 @@
 # Parque Aquático ATLANTIS
-
-Aplicação full-stack (React + TypeScript no front / Express + TypeScript no back) para gestão de clientes titulares, dependentes, acomodações e hospedagens.
-
 ## 1. Requisitos
 
 - Node.js 18+ (recomendado LTS)
@@ -44,20 +41,12 @@ Para desenvolvimento (reinicia a cada alteração):
 ```powershell
 npm run dev
 ```
-Build (se configurado futuramente):
-```powershell
-npm run build
-```
-
 ### 4.2 Porta
 A API roda em `http://localhost:3005` (rotas base: `/api`).
 
 ### 4.3 Persistência
 - Armazenamento em arquivos JSON em `back/src/data/store/`.
 - Migração automática de diretório legado caso exista.
-
-### 4.4 Endpoints Principais
-Base: `http://localhost:3005/api`
 
 Titulares:
 - `GET /titulares` – Lista titulares
@@ -138,7 +127,7 @@ npm install express cors helmet morgan zod uuid
 npm install --save-dev typescript ts-node-dev @types/node @types/express @types/cors @types/uuid
 npm run dev
 ```
-Em outra janela:
+Em outra janela (ou terminal):
 ```powershell
 # Frontend
 cd front
@@ -147,28 +136,3 @@ npm install primereact primeicons primeflex
 npm start
 ```
 
-## 10. Estrutura de Código
-- Rotas: `back/src/web/routes/*.ts`
-- Modelos: `back/src/domain/models.ts`
-- Persistência: `back/src/data/db.ts`
-- Front componentes: `front/src/components/*`
-
-## 11. Possíveis Próximos Passos
-- Implementar exclusão via interface (botões Delete chamando rotas DELETE).
-- Formato de data centralizado (ex: sempre DD/MM/YYYY).
-- Testes automatizados (Jest) para rotas e serviços.
-- Deploy (configurar scripts e variáveis de ambiente em produção).
-
-## 12. Troubleshooting
-| Problema | Causa provável | Solução |
-|----------|----------------|---------|
-| API não responde | Porta ocupada | Fechar processo ou mudar porta em `server.ts` |
-| Erro CORS | Falta de `cors()` | Conferir middleware no `app.ts` |
-| Favicon ainda aparece | Cache do navegador | Ctrl+F5 ou limpar cache |
-| Dados não persistem | Diretório store ausente | Garantir criação automática ou permissões |
-
-## 13. Licença
-Uso acadêmico / interno (não especificado). Adapte conforme necessidade.
-
----
-Documentação gerada para orientar instalação e uso rápido do projeto Parque Aquático ATLANTIS.
